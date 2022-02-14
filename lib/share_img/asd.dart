@@ -16,15 +16,17 @@ class _Asd extends State<Asd> {
   @override
   Widget build(BuildContext context) {
     final Stream<QuerySnapshot> _usersStream = _firestore
-        .collection('users')
-        .orderBy('timestamp', descending: true)
-        .limit(30)
+        .collection('locs')
+        .doc('6tU26rPPlpNxhw3RR9vjxEoMHuC2')
+        .collection('userlocs')
         .snapshots();
 
     return Scaffold(
       body: Container(
         child: Center(
-          child: StreamBuilder(
+          child:
+              // TextFormField(),
+              StreamBuilder(
             stream: _usersStream,
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -41,7 +43,7 @@ class _Asd extends State<Asd> {
                   Map<String, dynamic> data =
                       document.data()! as Map<String, dynamic>;
                   return ListTile(
-                    title: Text(data['surname']),
+                    title: Text(data.toString()),
                   );
                 }).toList(),
               );

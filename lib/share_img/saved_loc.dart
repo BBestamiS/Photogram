@@ -30,6 +30,7 @@ class _SavedLocState extends State<Ads> {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthenticationService>(context);
+
     final fileName = file != null ? basename(file!.path) : 'Dosya seçilmedi!';
     CollectionReference posts = FirebaseFirestore.instance.collection('posts');
 
@@ -39,6 +40,16 @@ class _SavedLocState extends State<Ads> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: FileImage(file ?? File("")),
+                  ),
+                ),
+              ),
               GestureDetector(
                 onTap: () {
                   selectFile();
@@ -125,7 +136,7 @@ class _SavedLocState extends State<Ads> {
 
     final snapshot = await task!.whenComplete(() {});
     final urlDownload = await snapshot.ref.getDownloadURL();
-    DatabaseManager().addPost(urlDownload, destination);
+    DatabaseManager().addPost(urlDownload, destination, "", "");
 
     print('Download-Link: $urlDownload');
   }
