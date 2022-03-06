@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:photogram/main_map/instantlocation.dart';
 import 'package:photogram/main_map/main_screen.dart';
+import 'package:photogram/share/instantloc.dart';
 import 'package:photogram/share/savedloc.dart';
 import 'package:photogram/wrapper.dart';
 
@@ -64,8 +65,18 @@ class _FindState extends State<Share> {
                                           "Kayıtlı Konumlardan Paylaş",
                                           "disc.png"),
                                     ),
-                                    secondPageButton(width, height,
-                                        "Anlık Konumdan Paylaş", "loc1.png"),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => InstantLoc(),
+                                          ),
+                                        );
+                                      },
+                                      child: secondPageButton(width, height,
+                                          "Anlık Konumdan Paylaş", "loc1.png"),
+                                    ),
                                   ],
                                 ),
                               ),

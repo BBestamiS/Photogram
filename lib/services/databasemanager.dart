@@ -26,6 +26,22 @@ class DatabaseManager {
         .catchError((error) => print("Failed to add user: $error"));
   }
 
+  Future<void> updateUser(
+      String name, String surName, String nname, String uid, mediaUrl) {
+    CollectionReference users = _firestore.collection('users');
+
+    return users
+        .doc(uid)
+        .update({
+          'mediaUrl': mediaUrl,
+          'username': nname,
+          'name': name,
+          'surname': surName,
+        })
+        .then((value) => print("User Updated"))
+        .catchError((error) => print("Failed to update user: $error"));
+  }
+
   Future<void> addPost(
     String mediaUrl,
     String postId,
@@ -131,7 +147,7 @@ class DatabaseManager {
           'thoroughfare': location[11],
           'subThoroughfare': location[12],
           'timestamp': timestamp,
-          'postId': postId,
+          'locId': postId,
           'uid': uid,
         })
         .then((value) => print("Loc Added"))

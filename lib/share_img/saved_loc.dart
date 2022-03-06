@@ -137,8 +137,6 @@ class _SavedLocState extends State<Ads> {
     final snapshot = await task!.whenComplete(() {});
     final urlDownload = await snapshot.ref.getDownloadURL();
     DatabaseManager().addPost(urlDownload, destination, "", "");
-
-    print('Download-Link: $urlDownload');
   }
 
   Widget buildUploadStatus(UploadTask task) => StreamBuilder<TaskSnapshot>(

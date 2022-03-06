@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'dart:ui';
 import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:rive/rive.dart' as riv;
 
 class ShareLoc extends StatefulWidget {
   const ShareLoc({Key? key}) : super(key: key);
@@ -157,8 +158,16 @@ class _FindState extends State<ShareLoc> {
                                     ],
                                   );
                                 } else {
-                                  return Center(
-                                      child: CircularProgressIndicator());
+                                  return Container(
+                                    width: width * 1,
+                                    child: Center(
+                                      child: riv.RiveAnimation.asset(
+                                        'animations/delivery.riv',
+                                        fit: BoxFit.cover,
+                                        animations: ['Example'],
+                                      ),
+                                    ),
+                                  );
                                 }
                               },
                             ),
