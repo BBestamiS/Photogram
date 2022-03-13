@@ -346,12 +346,7 @@ class _ShareImage extends State<ShareImage> {
     location.add(widget.locinfos['subLocality'].toString());
     location.add(widget.locinfos['thoroughfare'].toString());
     location.add(widget.locinfos['subThoroughfare'].toString());
-    if (isItFirst == true) {
-      DatabaseManager().addUniqLoc(location, uniqLocId, userId);
-      DatabaseManager().addLocs(location, locId, userId);
-    } else {
-      DatabaseManager().addLocs(location, locId, userId);
-    }
+
     task = FirebaseApi.uploadFile(destination, file!);
     setState(() {});
 
@@ -363,6 +358,12 @@ class _ShareImage extends State<ShareImage> {
       DatabaseManager().addPost(urlDownload, destination, locId, uniqLocId);
     } else {
       DatabaseManager().addPost(urlDownload, destination, locId, "");
+    }
+    if (isItFirst == true) {
+      DatabaseManager().addUniqLoc(location, uniqLocId, userId);
+      DatabaseManager().addLocs(location, locId, userId, urlDownload);
+    } else {
+      DatabaseManager().addLocs(location, locId, userId, urlDownload);
     }
   }
 

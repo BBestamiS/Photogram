@@ -55,15 +55,12 @@ class _FindState extends State<Find> {
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
-                                                InstantLocation(),
+                                                SearchLocation(),
                                           ),
                                         );
                                       },
-                                      child: secondPageButton(
-                                          width,
-                                          height,
-                                          "Anlık Konumdan Bul",
-                                          "delivery1.png"),
+                                      child: secondPageButton(width, height,
+                                          "Konum Ara", "delivery1.png"),
                                     ),
                                     GestureDetector(
                                       onTap: () {

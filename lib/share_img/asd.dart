@@ -15,51 +15,25 @@ class _Asd extends State<Asd> {
 
   @override
   Widget build(BuildContext context) {
-    final Stream<QuerySnapshot> _usersStream = _firestore
-        .collection('locs')
-        .doc('6tU26rPPlpNxhw3RR9vjxEoMHuC2')
-        .collection('userlocs')
-        .snapshots();
-
+    CollectionReference _usersStream = _firestore.collection('locs');
+    _getPlace();
     return Scaffold(
-      body: Container(
-        child: Center(
-          child:
-              // TextFormField(),
-              StreamBuilder(
-            stream: _usersStream,
-            builder:
-                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (snapshot.hasError) {
-                return Text('Something went wrong');
-              }
-
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Text("Loading");
-              }
-
-              return ListView(
-                children: snapshot.data!.docs.map((DocumentSnapshot document) {
-                  Map<String, dynamic> data =
-                      document.data()! as Map<String, dynamic>;
-                  return ListTile(
-                    title: Text(data.toString()),
-                  );
-                }).toList(),
-              );
-            },
-          ),
-        ),
-      ),
+      body: Container(),
     );
   }
 
   void deneme(babaRef) async {}
 
   void _getPlace() async {
+    try {
+      List<Location> locations = await locationFromAddress("Golden Gate");
+      print(locations);
+    } catch (e) {
+      print(e.toString());
+    }
     List<Placemark> placemarks =
-        await placemarkFromCoordinates(41.227968, 28.979350);
-    print(placemarks);
+        await placemarkFromCoordinates(37.0618523, 36.2369856);
+
     Placemark placeMark = placemarks[0];
     String? street = placeMark.street;
     String? isoCountryCode = placeMark.isoCountryCode;

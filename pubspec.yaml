@@ -32,6 +32,8 @@ dependencies:
   rive: ^0.8.1
   image_picker: ^0.8.4+9
   url_launcher: ^6.0.20
+  geolocator: ^8.2.0
+  http: ^0.13.4
 
 dev_dependencies:
   flutter_test:

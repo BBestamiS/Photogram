@@ -61,7 +61,7 @@ class DatabaseManager {
           'locId': locId,
           'uniqLocId': uniqLocId,
           'timestamp': timestamp,
-          'uid': 'uid',
+          'uid': uid,
         })
         .then((value) => print("Post Added"))
         .catchError((error) => print("Failed to add posts: $error"));
@@ -128,7 +128,12 @@ class DatabaseManager {
         .catchError((error) => print("Failed to add uniq location: $error"));
   }
 
-  Future<void> addLocs(List location, String postId, String uid) {
+  Future<void> addLocs(
+    List location,
+    String postId,
+    String uid,
+    String mediaUrl,
+  ) {
     CollectionReference locs = _firestore.collection('locs');
     return locs
         .doc(postId)
@@ -149,6 +154,7 @@ class DatabaseManager {
           'timestamp': timestamp,
           'locId': postId,
           'uid': uid,
+          'mediaUrl': mediaUrl,
         })
         .then((value) => print("Loc Added"))
         .catchError((error) => print("Failed to add location: $error"));
