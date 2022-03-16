@@ -107,6 +107,7 @@ class _SearchLocation extends State<SearchLocation> {
                               }),
                           onTap: () {
                             searchLoc.text = "";
+                            searchLocText = "";
                             markerImageUrl = contex['mediaUrl'];
                             setState(() {});
                           },
@@ -233,8 +234,7 @@ class _SearchLocation extends State<SearchLocation> {
                     children: [
                       Column(
                         children: [
-                          getNoFoundText(isItTrue, width),
-                          Expanded(
+                          Flexible(
                             child: FutureBuilder(
                               future: getLoc(),
                               builder: (BuildContext context,
@@ -277,7 +277,7 @@ class _SearchLocation extends State<SearchLocation> {
                                               child:
                                                   CircularProgressIndicator()));
                                     }
-                                    if (snapshot.data!.docs.isEmpty) {
+                                    if (snapshot.data.docs.isEmpty) {
                                       return Flexible(
                                         child: Container(
                                           child: Center(
@@ -342,7 +342,7 @@ class _SearchLocation extends State<SearchLocation> {
                                                         mediaLng.toString());
                                               }
 
-                                              return Text("loading");
+                                              return Container();
                                             },
                                           );
                                           // FutureBuilder(
@@ -434,28 +434,32 @@ class _SearchLocation extends State<SearchLocation> {
                                 ),
                               ),
                             ),
-                            GestureDetector(
-                              onTap: () {
-                                markerImageUrl = "";
-                                searchLocText = searchLoc.text;
-                                changePoss();
-                                setState(() {});
-                              },
-                              child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.green,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  height: 50,
-                                  width: 200,
-                                  child: Center(
-                                    child: Text("Ara",
-                                        style: GoogleFonts.sora(
-                                          textStyle: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold),
-                                        )),
-                                  )),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: GestureDetector(
+                                onTap: () {
+                                  markerImageUrl = "";
+                                  searchLocText = searchLoc.text;
+                                  changePoss();
+                                  setState(() {});
+                                },
+                                child: Container(
+                                    margin: EdgeInsets.only(right: 20),
+                                    decoration: BoxDecoration(
+                                      color: Colors.green,
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    height: 50,
+                                    width: 100,
+                                    child: Center(
+                                      child: Text("Ara",
+                                          style: GoogleFonts.sora(
+                                            textStyle: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold),
+                                          )),
+                                    )),
+                              ),
                             ),
                           ],
                         ),
@@ -490,27 +494,6 @@ class _SearchLocation extends State<SearchLocation> {
         ],
       ),
     );
-  }
-
-  getNoFoundText(isItTrue, width) {
-    if (isItTrue == true) {
-      return Container();
-    } else {
-      return Container(
-        width: width * 1,
-        height: 100,
-        child: Center(
-          child: Text(
-            "Yakınlarda konum bulunamadı!",
-            style: GoogleFonts.sora(
-              textStyle: TextStyle(
-                fontSize: 17,
-              ),
-            ),
-          ),
-        ),
-      );
-    }
   }
 
   Future getSearchImages() async {

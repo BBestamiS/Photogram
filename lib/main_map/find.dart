@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:photogram/main_map/closelocation.dart';
-import 'package:photogram/main_map/instantlocation.dart';
+import 'package:photogram/main_map/searchlocation.dart';
 import 'package:photogram/main_map/main_screen.dart';
 import 'package:photogram/wrapper.dart';
 
