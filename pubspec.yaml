@@ -13,11 +13,27 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  firebase_core: "^1.10.2"
-  firebase_auth: "^3.3.0"
+
+  firebase_core: "^1.4.0"
+  firebase_auth: "^3.0.0"
   cupertino_icons: ^1.0.2
   google_fonts: ^2.1.0
   email_validator: ^2.0.1
+  provider: ^6.0.1
+  cloud_firestore: ^3.1.4
+  google_maps_flutter: ^2.0.10
+  location: ^4.2.0
+  dio: ^4.0.0
+  flutter_polyline_points: ^1.0.0
+  firebase_storage: ^10.2.5
+  file_picker: ^4.3.3
+  geocoding: ^2.0.2
+  uuid: ^3.0.5
+  rive: ^0.8.1
+  image_picker: ^0.8.4+9
+  url_launcher: ^6.0.20
+  geolocator: ^8.2.0
+  http: ^0.13.4
 
 dev_dependencies:
   flutter_test:
@@ -31,4 +47,6 @@ flutter:
 
   assets:
     - pics/
+    - animations/
+
 
