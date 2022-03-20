@@ -6,6 +6,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:photogram/main_map/find.dart';
 import 'package:photogram/main_map/share.dart';
+import 'package:photogram/profile/profile.dart';
 import 'package:photogram/profile/settings.dart';
 import 'package:photogram/services/authentication_service.dart';
 import 'package:provider/provider.dart';
@@ -91,7 +92,8 @@ class _MainState extends State<MainScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => ProfileSettings(),
+                                    builder: (context) => Profile(
+                                        AuthenticationService().getUser()),
                                   ),
                                 );
                               },

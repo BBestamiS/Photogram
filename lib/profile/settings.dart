@@ -10,6 +10,7 @@ import 'package:photogram/auth_screens/home.dart';
 import 'package:photogram/main_map/find.dart';
 import 'package:photogram/main_map/main_screen.dart';
 import 'package:photogram/main_map/share.dart';
+import 'package:photogram/profile/profile.dart';
 import 'package:photogram/services/authentication_service.dart';
 import 'package:photogram/services/databasemanager.dart';
 import 'package:photogram/services/imagemanager.dart';
@@ -415,7 +416,8 @@ class _ProfileSettings extends State<ProfileSettings> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => MainScreen(),
+                      builder: (context) =>
+                          Profile(AuthenticationService().getUser()),
                     ),
                   );
                 },

@@ -106,7 +106,6 @@ class _SearchLocation extends State<SearchLocation> {
                                 }
                               }),
                           onTap: () {
-                            searchLoc.text = "";
                             searchLocText = "";
                             markerImageUrl = contex['mediaUrl'];
                             setState(() {});
@@ -260,7 +259,7 @@ class _SearchLocation extends State<SearchLocation> {
                               },
                             ),
                           ),
-                          searchLoc.text == ''
+                          searchLocText == ''
                               ? Container()
                               : FutureBuilder(
                                   future: getSearchImages(),
@@ -277,7 +276,8 @@ class _SearchLocation extends State<SearchLocation> {
                                               child:
                                                   CircularProgressIndicator()));
                                     }
-                                    if (snapshot.data.docs.isEmpty) {
+
+                                    if (snapshot.data.docs.toString() == "[]") {
                                       return Flexible(
                                         child: Container(
                                           child: Center(
