@@ -21,6 +21,7 @@ class DatabaseManager {
           'follow': 0,
           'followers': 0,
           'timestamp': timestamp,
+          'uid': uid,
         })
         .then((value) => print("User Added"))
         .catchError((error) => print("Failed to add user: $error"));

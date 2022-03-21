@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:photogram/auth_screens/login/login.dart';
 import 'package:photogram/auth_screens/signup/signup.dart';
+import 'package:photogram/main_map/findAccount.dart';
 import 'package:photogram/main_map/main_screen.dart';
 import 'package:photogram/profile/profile.dart';
 import 'package:photogram/services/authentication_service.dart';

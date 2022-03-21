@@ -2,12 +2,9 @@ import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:photogram/main_map/find.dart';
-import 'package:photogram/main_map/main_screen.dart';
 import 'package:photogram/main_map/share.dart';
 import 'package:photogram/profile/settings.dart';
 import 'package:photogram/services/authentication_service.dart';
@@ -20,8 +17,9 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
 class Profile extends StatefulWidget {
-  Profile(this.uid);
+  Profile(this.uid, this.tmp);
   var uid;
+  var tmp;
   @override
   _Profile createState() => _Profile();
 }
@@ -107,47 +105,77 @@ class _Profile extends State<Profile> {
                         height: height * 0.20,
                         child: Row(
                           children: [
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ProfileSettings(),
-                                  ),
-                                );
-                              },
-                              // onTapDown: (detail) {
-                              //   shdwtmp = 1;
-                              // },
-                              // onTapUp: (detail) {
-                              //   shdwtmp = 0;
-                              // },
-                              onLongPress: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Wrapper()));
-                              },
-                              child:
-                                  //profil fotoğrafi kısmı
-                                  Container(
-                                width: width * 0.4,
-                                child: Container(
-                                  padding: EdgeInsets.all(20),
-                                  child: Center(
-                                    child: AspectRatio(
-                                      aspectRatio: 1 / 1,
+                            widget.tmp == 1
+                                ? GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              ProfileSettings(),
+                                        ),
+                                      );
+                                    },
+
+                                    // onTapDown: (detail) {
+                                    //   shdwtmp = 1;
+                                    // },
+                                    // onTapUp: (detail) {
+                                    //   shdwtmp = 0;
+                                    // },
+                                    onLongPress: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => Wrapper()));
+                                    },
+                                    child:
+                                        //profil fotoğrafi kısmı
+                                        Container(
+                                      width: width * 0.4,
                                       child: Container(
-                                        decoration: boxshadow(shdwtmp),
-                                        child: getProfilePic(
-                                          data['mediaUrl'],
+                                        padding: EdgeInsets.all(20),
+                                        child: Center(
+                                          child: AspectRatio(
+                                            aspectRatio: 1 / 1,
+                                            child: Container(
+                                              decoration: boxshadow(shdwtmp),
+                                              child: getProfilePic(
+                                                data['mediaUrl'],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => Wrapper()));
+                                    },
+                                    child:
+                                        //profil fotoğrafi kısmı
+                                        Container(
+                                      width: width * 0.4,
+                                      child: Container(
+                                        padding: EdgeInsets.all(20),
+                                        child: Center(
+                                          child: AspectRatio(
+                                            aspectRatio: 1 / 1,
+                                            child: Container(
+                                              decoration: boxshadow(shdwtmp),
+                                              child: getProfilePic(
+                                                data['mediaUrl'],
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ),
-                            ),
                             Container(
                               width: width * 0.6,
                               child: Center(
@@ -710,8 +738,8 @@ class _Profile extends State<Profile> {
     );
   }
 
-  Widget content(double height, double width, String pic, Null ppic,
-      String uname, String loc) {
+  Widget content(
+      double height, double width, String pic, ppic, String uname, String loc) {
     return Container(
       child: Stack(
         children: [

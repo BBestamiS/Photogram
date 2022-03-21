@@ -78,7 +78,7 @@ class _SearchLocation extends State<SearchLocation> {
                       return Text('Bir şeyler ters gitti!');
                     }
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Text("Yükleniyor..");
+                      return Container();
                     }
                     if (snapshot.data!.docs.isEmpty) {
                       return getPage(false, height, width, snapshot);
@@ -479,7 +479,7 @@ class _SearchLocation extends State<SearchLocation> {
                       );
                     },
                     child: Container(
-                      margin: EdgeInsets.only(top: 20),
+                      margin: EdgeInsets.only(top: 45),
                       width: 50,
                       height: 50,
                       child: Image(
@@ -517,8 +517,8 @@ class _SearchLocation extends State<SearchLocation> {
     }
   }
 
-  Widget content(double height, double width, String pic, Null ppic,
-      String uname, String loc) {
+  Widget content(
+      double height, double width, String pic, ppic, String uname, String loc) {
     return Container(
       child: Stack(
         children: [
