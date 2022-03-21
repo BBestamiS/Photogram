@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:photogram/main_map/find.dart';
+import 'package:photogram/main_map/findAccount.dart';
 import 'package:photogram/main_map/share.dart';
 import 'package:photogram/profile/profile.dart';
 import 'package:photogram/profile/settings.dart';
@@ -23,7 +24,7 @@ class _MainState extends State<MainScreen> {
   final controller = PageController(
     initialPage: 0,
   );
-
+  TextEditingController searchController = TextEditingController();
   int shdwtmp = 0;
   @override
   Widget build(BuildContext context) {
@@ -93,7 +94,7 @@ class _MainState extends State<MainScreen> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => Profile(
-                                        AuthenticationService().getUser()),
+                                        AuthenticationService().getUser(), 1),
                                   ),
                                 );
                               },
@@ -282,23 +283,57 @@ class _MainState extends State<MainScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Center(
-                      child: Container(
-                        height: 45,
-                        width: width * 0.7,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          color: Colors.white,
-                        ),
-                        child: Center(
-                          child: TextFormField(
-                            style: TextStyle(fontSize: 20),
-                            decoration: InputDecoration(
-                              hintText: "Kimi Bulmak İstiyorsun?",
-                              border: InputBorder.none,
+                      child: Column(
+                        children: [
+                          Container(
+                            height: 45,
+                            width: width * 0.7,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              color: Colors.white,
                             ),
-                            textAlign: TextAlign.center,
+                            child: Center(
+                              child: TextFormField(
+                                controller: searchController,
+                                style: TextStyle(fontSize: 20),
+                                decoration: InputDecoration(
+                                  hintText: "Kimi Bulmak İstiyorsun?",
+                                  border: InputBorder.none,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
                           ),
-                        ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      FindAccount(searchController.text),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(top: 10),
+                              height: 45,
+                              width: width * 0.4,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                color: Colors.green,
+                              ),
+                              child: Center(
+                                  child: Text(
+                                "Bul",
+                                style: GoogleFonts.sora(
+                                    textStyle: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w300,
+                                        fontSize: 18)),
+                              )),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     GestureDetector(
@@ -422,8 +457,7 @@ class _MainState extends State<MainScreen> {
     );
   }
 
-  Widget content(
-      double width, String pic, String ppic, String uname, String loc) {
+  Widget content(double width, String pic, ppic, String uname, String loc) {
     return Container(
       child: Stack(
         children: [

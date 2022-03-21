@@ -417,7 +417,7 @@ class _ProfileSettings extends State<ProfileSettings> {
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          Profile(AuthenticationService().getUser()),
+                          Profile(AuthenticationService().getUser(), 1),
                     ),
                   );
                 },
