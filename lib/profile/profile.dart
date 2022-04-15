@@ -514,40 +514,52 @@ class _Profile extends State<Profile> {
                                                 begin: Alignment.topCenter,
                                                 end: Alignment.bottomCenter,
                                                 colors: [
-                                                  Color.fromRGBO(
-                                                      255, 255, 255, 0.0),
-                                                  Color.fromRGBO(
-                                                      255, 255, 255, 1),
+                                                  Color.fromRGBO(0, 0, 0, 0.0),
+                                                  Color.fromRGBO(0, 0, 0, 0.3),
+                                                  Color.fromRGBO(0, 0, 0, 0.5),
                                                 ],
                                               ),
                                             ),
-                                            child: Center(
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  if (tmp == 0) {
-                                                    _secondAnimation();
-                                                    controller.animateToPage(1,
-                                                        duration: new Duration(
-                                                            milliseconds: 500),
-                                                        curve: Curves.ease);
-                                                    tmp = 1;
-                                                  } else {
-                                                    _firstAnimation();
-                                                    controller.animateToPage(0,
-                                                        duration: new Duration(
-                                                            milliseconds: 500),
-                                                        curve: Curves.ease);
-                                                    tmp = 0;
-                                                  }
-                                                },
-                                                child: Container(
-                                                  width: 120,
-                                                  height: 65,
-                                                  child:
-                                                      riv.RiveAnimation.asset(
-                                                    'animations/slide.riv',
-                                                    fit: BoxFit.cover,
-                                                    onInit: _onRiveInit,
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.zero,
+                                              child: BackdropFilter(
+                                                filter: ImageFilter.blur(
+                                                    sigmaX: 2, sigmaY: 2),
+                                                child: Center(
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      if (tmp == 0) {
+                                                        _secondAnimation();
+                                                        controller.animateToPage(
+                                                            1,
+                                                            duration:
+                                                                new Duration(
+                                                                    milliseconds:
+                                                                        500),
+                                                            curve: Curves.ease);
+                                                        tmp = 1;
+                                                      } else {
+                                                        _firstAnimation();
+                                                        controller.animateToPage(
+                                                            0,
+                                                            duration:
+                                                                new Duration(
+                                                                    milliseconds:
+                                                                        500),
+                                                            curve: Curves.ease);
+                                                        tmp = 0;
+                                                      }
+                                                    },
+                                                    child: Container(
+                                                      width: 120,
+                                                      height: 65,
+                                                      child: riv.RiveAnimation
+                                                          .asset(
+                                                        'animations/slide.riv',
+                                                        fit: BoxFit.cover,
+                                                        onInit: _onRiveInit,
+                                                      ),
+                                                    ),
                                                   ),
                                                 ),
                                               ),
