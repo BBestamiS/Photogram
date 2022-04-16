@@ -8,6 +8,7 @@ import 'package:photogram/main_map/find.dart';
 import 'package:photogram/main_map/share.dart';
 import 'package:photogram/profile/settings.dart';
 import 'package:photogram/services/authentication_service.dart';
+import 'package:photogram/services/databasemanager.dart';
 import 'package:photogram/wrapper.dart';
 import 'package:provider/provider.dart';
 import 'package:rive/rive.dart' as riv;
@@ -49,6 +50,7 @@ class _Profile extends State<Profile> {
 
   void _firstAnimation() => _possiton?.change(false);
   void _secondAnimation() => _possiton?.change(true);
+
   @override
   Widget build(BuildContext context) {
     final _firestore = FirebaseFirestore.instance;
@@ -138,12 +140,97 @@ class _Profile extends State<Profile> {
                                         child: Center(
                                           child: AspectRatio(
                                             aspectRatio: 1 / 1,
-                                            child: Container(
-                                              decoration: boxshadow(shdwtmp),
-                                              child: getProfilePic(
-                                                data['mediaUrl'],
-                                              ),
-                                            ),
+                                            child: StreamBuilder<
+                                                    DocumentSnapshot>(
+                                                stream: isItFollow(),
+                                                builder: (BuildContext context,
+                                                    AsyncSnapshot<
+                                                            DocumentSnapshot>
+                                                        snapshot) {
+                                                  if (snapshot.hasError) {
+                                                    return Text(
+                                                        'Something went wrong');
+                                                  }
+
+                                                  if (snapshot
+                                                          .connectionState ==
+                                                      ConnectionState.waiting) {
+                                                    return Container();
+                                                  }
+                                                  if (snapshot.hasData &&
+                                                      !snapshot.data!.exists) {
+                                                    return Container(
+                                                      decoration: BoxDecoration(
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color:
+                                                                Color.fromRGBO(
+                                                                    255,
+                                                                    255,
+                                                                    255,
+                                                                    0.25),
+                                                            blurRadius: 7,
+                                                            spreadRadius: 1,
+                                                            offset:
+                                                                Offset(-9, -9),
+                                                          ),
+                                                          BoxShadow(
+                                                            color:
+                                                                Color.fromRGBO(
+                                                                    0,
+                                                                    0,
+                                                                    0,
+                                                                    0.25),
+                                                            blurRadius: 5,
+                                                            spreadRadius: 1,
+                                                            offset:
+                                                                Offset(9, 9),
+                                                          ),
+                                                        ],
+                                                        color: Color.fromARGB(
+                                                            255, 255, 255, 255),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(100),
+                                                      ),
+                                                      child: getProfilePic(
+                                                        data['mediaUrl'],
+                                                      ),
+                                                    );
+                                                  }
+                                                  return Container(
+                                                    decoration: BoxDecoration(
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: Color.fromRGBO(
+                                                              255,
+                                                              255,
+                                                              255,
+                                                              0.25),
+                                                          blurRadius: 7,
+                                                          spreadRadius: 1,
+                                                          offset:
+                                                              Offset(-9, -9),
+                                                        ),
+                                                        BoxShadow(
+                                                          color: Color.fromRGBO(
+                                                              0, 0, 0, 0.25),
+                                                          blurRadius: 5,
+                                                          spreadRadius: 1,
+                                                          offset: Offset(9, 9),
+                                                        ),
+                                                      ],
+                                                      color: Color.fromARGB(
+                                                          255, 17, 195, 109),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              100),
+                                                    ),
+                                                    child: getProfilePic(
+                                                      data['mediaUrl'],
+                                                    ),
+                                                  );
+                                                }),
                                           ),
                                         ),
                                       ),
@@ -151,6 +238,43 @@ class _Profile extends State<Profile> {
                                   )
                                 : GestureDetector(
                                     onTap: () {
+                                      DatabaseManager()
+                                          .controlFollowUser(widget.uid);
+                                      // CollectionReference follow =
+                                      //     FirebaseFirestore.instance
+                                      //         .collection('follow');
+
+                                      // FutureBuilder(
+                                      //   future: follow
+                                      //       .doc(AuthenticationService()
+                                      //           .getUser())
+                                      //       .collection("userid")
+                                      //       .doc(widget.uid)
+                                      //       .get(),
+                                      //   builder: (BuildContext context,
+                                      //       AsyncSnapshot snapshot) {
+                                      //     if (snapshot.hasError) {
+                                      //       return Text("Something went wrong");
+                                      //     }
+
+                                      //     if (snapshot.connectionState ==
+                                      //         ConnectionState.waiting) {
+                                      //       return Text("loading");
+                                      //     }
+
+                                      //     if (snapshot.hasData &&
+                                      //         !snapshot.data!.exists) {
+                                      //       DatabaseManager()
+                                      //           .removeFollowUser(widget.uid);
+                                      //       return Text("Kullanıcı Kaldırıldı");
+                                      //     }
+                                      //     DatabaseManager()
+                                      //         .addFollowUser(widget.uid);
+                                      //     return Text("kullanıcı eklendi");
+                                      //   },
+                                      // );
+                                    },
+                                    onLongPress: () {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
@@ -165,12 +289,97 @@ class _Profile extends State<Profile> {
                                         child: Center(
                                           child: AspectRatio(
                                             aspectRatio: 1 / 1,
-                                            child: Container(
-                                              decoration: boxshadow(shdwtmp),
-                                              child: getProfilePic(
-                                                data['mediaUrl'],
-                                              ),
-                                            ),
+                                            child: StreamBuilder<
+                                                    DocumentSnapshot>(
+                                                stream: isItFollow(),
+                                                builder: (BuildContext context,
+                                                    AsyncSnapshot<
+                                                            DocumentSnapshot>
+                                                        snapshot) {
+                                                  if (snapshot.hasError) {
+                                                    return Text(
+                                                        'Something went wrong');
+                                                  }
+
+                                                  if (snapshot
+                                                          .connectionState ==
+                                                      ConnectionState.waiting) {
+                                                    return Container();
+                                                  }
+                                                  if (snapshot.hasData &&
+                                                      !snapshot.data!.exists) {
+                                                    return Container(
+                                                      decoration: BoxDecoration(
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color:
+                                                                Color.fromRGBO(
+                                                                    255,
+                                                                    255,
+                                                                    255,
+                                                                    0.25),
+                                                            blurRadius: 7,
+                                                            spreadRadius: 1,
+                                                            offset:
+                                                                Offset(-9, -9),
+                                                          ),
+                                                          BoxShadow(
+                                                            color:
+                                                                Color.fromRGBO(
+                                                                    0,
+                                                                    0,
+                                                                    0,
+                                                                    0.25),
+                                                            blurRadius: 5,
+                                                            spreadRadius: 1,
+                                                            offset:
+                                                                Offset(9, 9),
+                                                          ),
+                                                        ],
+                                                        color: Color.fromARGB(
+                                                            255, 255, 255, 255),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(100),
+                                                      ),
+                                                      child: getProfilePic(
+                                                        data['mediaUrl'],
+                                                      ),
+                                                    );
+                                                  }
+                                                  return Container(
+                                                    decoration: BoxDecoration(
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: Color.fromRGBO(
+                                                              255,
+                                                              255,
+                                                              255,
+                                                              0.25),
+                                                          blurRadius: 7,
+                                                          spreadRadius: 1,
+                                                          offset:
+                                                              Offset(-9, -9),
+                                                        ),
+                                                        BoxShadow(
+                                                          color: Color.fromRGBO(
+                                                              0, 0, 0, 0.25),
+                                                          blurRadius: 5,
+                                                          spreadRadius: 1,
+                                                          offset: Offset(9, 9),
+                                                        ),
+                                                      ],
+                                                      color: Color.fromARGB(
+                                                          255, 17, 195, 109),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              100),
+                                                    ),
+                                                    child: getProfilePic(
+                                                      data['mediaUrl'],
+                                                    ),
+                                                  );
+                                                }),
                                           ),
                                         ),
                                       ),
@@ -200,17 +409,36 @@ class _Profile extends State<Profile> {
                                             MainAxisAlignment.center,
                                         children: [
                                           Container(
-                                            child: Text(
-                                              data['followers'].toString(),
-                                              style: GoogleFonts.sora(
-                                                textStyle: TextStyle(
-                                                  color: Color.fromRGBO(
-                                                      126, 181, 166, 1),
-                                                  fontSize: 30,
-                                                  fontWeight: FontWeight.w700,
-                                                ),
-                                              ),
-                                            ),
+                                            child: StreamBuilder<QuerySnapshot>(
+                                                stream: getFollowerStream(),
+                                                builder: (BuildContext context,
+                                                    AsyncSnapshot<QuerySnapshot>
+                                                        snapshot) {
+                                                  if (snapshot.hasError) {
+                                                    return Text(
+                                                        'Something went wrong');
+                                                  }
+
+                                                  if (snapshot
+                                                          .connectionState ==
+                                                      ConnectionState.waiting) {
+                                                    return Container();
+                                                  }
+
+                                                  return Text(
+                                                    snapshot.data!.size
+                                                        .toString(),
+                                                    style: GoogleFonts.sora(
+                                                      textStyle: TextStyle(
+                                                        color: Color.fromRGBO(
+                                                            126, 181, 166, 1),
+                                                        fontSize: 30,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                      ),
+                                                    ),
+                                                  );
+                                                }),
                                           ),
                                           Container(
                                             child: Text(
@@ -231,16 +459,36 @@ class _Profile extends State<Profile> {
                                             MainAxisAlignment.center,
                                         children: [
                                           Container(
-                                            child: Text(
-                                              data['follow'].toString(),
-                                              style: GoogleFonts.sora(
-                                                textStyle: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 30,
-                                                  fontWeight: FontWeight.w700,
-                                                ),
-                                              ),
-                                            ),
+                                            child: StreamBuilder<QuerySnapshot>(
+                                                stream:
+                                                    getFollowStream(widget.uid),
+                                                builder: (BuildContext context,
+                                                    AsyncSnapshot<QuerySnapshot>
+                                                        snapshot) {
+                                                  if (snapshot.hasError) {
+                                                    return Text(
+                                                        'Something went wrong');
+                                                  }
+
+                                                  if (snapshot
+                                                          .connectionState ==
+                                                      ConnectionState.waiting) {
+                                                    return Container();
+                                                  }
+                                                  return Text(
+                                                    snapshot.data!.size
+                                                        .toString(),
+                                                    style: GoogleFonts.sora(
+                                                      textStyle: TextStyle(
+                                                        color: Color.fromRGBO(
+                                                            126, 181, 166, 1),
+                                                        fontSize: 30,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                      ),
+                                                    ),
+                                                  );
+                                                }),
                                           ),
                                           Container(
                                             child: Text(
@@ -515,6 +763,7 @@ class _Profile extends State<Profile> {
                                                 end: Alignment.bottomCenter,
                                                 colors: [
                                                   Color.fromRGBO(0, 0, 0, 0.0),
+                                                  Color.fromRGBO(0, 0, 0, 0.1),
                                                   Color.fromRGBO(0, 0, 0, 0.3),
                                                   Color.fromRGBO(0, 0, 0, 0.5),
                                                 ],
@@ -866,50 +1115,6 @@ class _Profile extends State<Profile> {
     );
   }
 
-  BoxDecoration boxshadow(int shdwtmp) {
-    if (shdwtmp == 0) {
-      shdwtmp = 1;
-      return BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Color.fromRGBO(255, 255, 255, 0.25),
-            blurRadius: 7,
-            spreadRadius: 1,
-            offset: Offset(-9, -9),
-          ),
-          BoxShadow(
-            color: Color.fromRGBO(0, 0, 0, 0.25),
-            blurRadius: 5,
-            spreadRadius: 1,
-            offset: Offset(9, 9),
-          ),
-        ],
-        color: Color.fromRGBO(255, 255, 255, 1),
-        borderRadius: BorderRadius.circular(100),
-      );
-    } else {
-      shdwtmp = 0;
-      return BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Color.fromRGBO(183, 174, 174, 0.25),
-            blurRadius: 5,
-            spreadRadius: 1,
-            offset: Offset(0, 0),
-          ),
-          BoxShadow(
-            color: Color.fromRGBO(0, 0, 0, 0.25),
-            blurRadius: 5,
-            spreadRadius: 1,
-            offset: Offset(0, 0),
-          ),
-        ],
-        color: Color.fromRGBO(255, 255, 255, 1),
-        borderRadius: BorderRadius.circular(100),
-      );
-    }
-  }
-
   getProfilePic(mediaUrl) {
     if (mediaUrl == null) {
       return Container(
@@ -961,5 +1166,33 @@ class _Profile extends State<Profile> {
         LatLng(_locationData.latitude ?? 0.0, _locationData.longitude ?? 0.0);
 
     return currentloc;
+  }
+
+  Stream<QuerySnapshot> getFollowStream(String uid) {
+    final Stream<QuerySnapshot> _followStream = FirebaseFirestore.instance
+        .collection('follow')
+        .doc(uid)
+        .collection("userid")
+        .snapshots();
+    return _followStream;
+  }
+
+  Stream<QuerySnapshot> getFollowerStream() {
+    final Stream<QuerySnapshot> _followerStream = FirebaseFirestore.instance
+        .collection('follower')
+        .doc(widget.uid)
+        .collection("userid")
+        .snapshots();
+    return _followerStream;
+  }
+
+  Stream<DocumentSnapshot> isItFollow() {
+    final Stream<DocumentSnapshot> _followStream = FirebaseFirestore.instance
+        .collection('follow')
+        .doc(AuthenticationService().getUser())
+        .collection("userid")
+        .doc(widget.uid)
+        .snapshots();
+    return _followStream;
   }
 }

@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uuid/uuid.dart';
 
@@ -127,6 +128,59 @@ class DatabaseManager {
         })
         .then((value) => print("uniqLoc Added"))
         .catchError((error) => print("Failed to add uniq location: $error"));
+  }
+
+  controlFollowUser(String followid) {
+    CollectionReference follow = _firestore.collection('follow');
+    CollectionReference follower = _firestore.collection('follower');
+    final auth.User? user = _firebaseAuth.currentUser;
+    final uid = user!.uid;
+    follow
+        .doc(uid)
+        .collection("userid")
+        .doc(followid)
+        .get()
+        .then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
+        follower
+            .doc(followid)
+            .collection("userid")
+            .doc(uid)
+            .delete()
+            .then((value) => print("follower Deleted"))
+            .catchError((error) => print("Failed to follower user: $error"));
+        follow
+            .doc(uid)
+            .collection("userid")
+            .doc(followid)
+            .delete()
+            .then((value) => print("User Deleted"))
+            .catchError((error) => print("Failed to delete user: $error"));
+      } else {
+        follower
+            .doc(followid)
+            .collection("userid")
+            .doc(uid)
+            .set({
+              'followid': followid,
+              'timestamp': timestamp,
+              'uid': uid,
+            })
+            .then((value) => print("follower added"))
+            .catchError((error) => print("Failed to add follower: $error"));
+        follow
+            .doc(uid)
+            .collection("userid")
+            .doc(followid)
+            .set({
+              'followid': followid,
+              'timestamp': timestamp,
+              'uid': uid,
+            })
+            .then((value) => print("follow added"))
+            .catchError((error) => print("Failed to add follow: $error"));
+      }
+    });
   }
 
   Future<void> addLocs(
