@@ -6,10 +6,12 @@ import 'package:photogram/services/databasemanager.dart';
 class AuthenticationService {
   final auth.FirebaseAuth _firebaseAuth = auth.FirebaseAuth.instance;
 
-  String getUser() {
-    final auth.User? user = _firebaseAuth.currentUser;
-    final uid = user!.uid;
-    return uid;
+  getUser() {
+    if (_firebaseAuth.currentUser != null) {
+      final auth.User? user = _firebaseAuth.currentUser;
+      final uid = user!.uid;
+      return uid;
+    }
   }
 
   User? _userFormFirebase(auth.User? user) {

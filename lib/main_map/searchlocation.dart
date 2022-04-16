@@ -537,14 +537,14 @@ class _SearchLocation extends State<SearchLocation> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => Profile(uid, 1),
+                          builder: (context) => Profile(uid),
                         ),
                       );
                     } else {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => Profile(uid, 0),
+                          builder: (context) => Profile(uid),
                         ),
                       );
                     }

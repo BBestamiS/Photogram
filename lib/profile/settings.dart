@@ -159,24 +159,52 @@ class _ProfileSettings extends State<ProfileSettings> {
                                                       MainAxisAlignment.center,
                                                   children: [
                                                     Container(
-                                                      child: Text(
-                                                        data['followers']
-                                                            .toString(),
-                                                        style:
-                                                            GoogleFonts.roboto(
-                                                          textStyle: TextStyle(
-                                                            color:
-                                                                Color.fromRGBO(
-                                                                    126,
-                                                                    181,
-                                                                    166,
-                                                                    1),
-                                                            fontSize: 30,
-                                                            fontWeight:
-                                                                FontWeight.w700,
-                                                          ),
-                                                        ),
-                                                      ),
+                                                      child: StreamBuilder<
+                                                              QuerySnapshot>(
+                                                          stream: DatabaseManager()
+                                                              .getFollowerStream(
+                                                                  AuthenticationService()
+                                                                      .getUser()),
+                                                          builder: (BuildContext
+                                                                  context,
+                                                              AsyncSnapshot<
+                                                                      QuerySnapshot>
+                                                                  snapshot) {
+                                                            if (snapshot
+                                                                .hasError) {
+                                                              return Text(
+                                                                  'Something went wrong');
+                                                            }
+
+                                                            if (snapshot
+                                                                    .connectionState ==
+                                                                ConnectionState
+                                                                    .waiting) {
+                                                              return Container();
+                                                            }
+
+                                                            return Text(
+                                                              snapshot
+                                                                  .data!.size
+                                                                  .toString(),
+                                                              style: GoogleFonts
+                                                                  .roboto(
+                                                                textStyle:
+                                                                    TextStyle(
+                                                                  color: Color
+                                                                      .fromRGBO(
+                                                                          126,
+                                                                          181,
+                                                                          166,
+                                                                          1),
+                                                                  fontSize: 30,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700,
+                                                                ),
+                                                              ),
+                                                            );
+                                                          }),
                                                     ),
                                                     Container(
                                                       child: Text(
@@ -199,19 +227,48 @@ class _ProfileSettings extends State<ProfileSettings> {
                                                       MainAxisAlignment.center,
                                                   children: [
                                                     Container(
-                                                      child: Text(
-                                                        data['follow']
-                                                            .toString(),
-                                                        style:
-                                                            GoogleFonts.roboto(
-                                                          textStyle: TextStyle(
-                                                            color: Colors.white,
-                                                            fontSize: 30,
-                                                            fontWeight:
-                                                                FontWeight.w700,
-                                                          ),
-                                                        ),
-                                                      ),
+                                                      child: StreamBuilder<
+                                                              QuerySnapshot>(
+                                                          stream: DatabaseManager()
+                                                              .getFollowStream(
+                                                                  AuthenticationService()
+                                                                      .getUser()),
+                                                          builder: (BuildContext
+                                                                  context,
+                                                              AsyncSnapshot<
+                                                                      QuerySnapshot>
+                                                                  snapshot) {
+                                                            if (snapshot
+                                                                .hasError) {
+                                                              return Text(
+                                                                  'Something went wrong');
+                                                            }
+
+                                                            if (snapshot
+                                                                    .connectionState ==
+                                                                ConnectionState
+                                                                    .waiting) {
+                                                              return Container();
+                                                            }
+
+                                                            return Text(
+                                                              snapshot
+                                                                  .data!.size
+                                                                  .toString(),
+                                                              style: GoogleFonts
+                                                                  .roboto(
+                                                                textStyle:
+                                                                    TextStyle(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontSize: 30,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700,
+                                                                ),
+                                                              ),
+                                                            );
+                                                          }),
                                                     ),
                                                     Container(
                                                       child: Text(
@@ -417,7 +474,7 @@ class _ProfileSettings extends State<ProfileSettings> {
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          Profile(AuthenticationService().getUser(), 1),
+                          Profile(AuthenticationService().getUser()),
                     ),
                   );
                 },

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:photogram/main_map/find.dart';
+import 'package:photogram/main_map/followAndFollowersPage.dart';
 import 'package:photogram/main_map/share.dart';
 import 'package:photogram/profile/settings.dart';
 import 'package:photogram/services/authentication_service.dart';
@@ -18,9 +19,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
 class Profile extends StatefulWidget {
-  Profile(this.uid, this.tmp);
+  Profile(this.uid);
   var uid;
-  var tmp;
   @override
   _Profile createState() => _Profile();
 }
@@ -107,7 +107,7 @@ class _Profile extends State<Profile> {
                         height: height * 0.20,
                         child: Row(
                           children: [
-                            widget.tmp == 1
+                            widget.uid == AuthenticationService().getUser()
                                 ? GestureDetector(
                                     onTap: () {
                                       Navigator.push(
@@ -404,105 +404,140 @@ class _Profile extends State<Profile> {
                                           ),
                                         ),
                                       ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                            child: StreamBuilder<QuerySnapshot>(
-                                                stream: getFollowerStream(),
-                                                builder: (BuildContext context,
-                                                    AsyncSnapshot<QuerySnapshot>
-                                                        snapshot) {
-                                                  if (snapshot.hasError) {
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  FollowAndFollowers(
+                                                      false, widget.uid),
+                                            ),
+                                          );
+                                        },
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: DatabaseManager()
+                                                      .getFollowerStream(
+                                                          widget.uid),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return Text(
+                                                          'Something went wrong');
+                                                    }
+
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Container();
+                                                    }
+
                                                     return Text(
-                                                        'Something went wrong');
-                                                  }
-
-                                                  if (snapshot
-                                                          .connectionState ==
-                                                      ConnectionState.waiting) {
-                                                    return Container();
-                                                  }
-
-                                                  return Text(
-                                                    snapshot.data!.size
-                                                        .toString(),
-                                                    style: GoogleFonts.sora(
-                                                      textStyle: TextStyle(
-                                                        color: Color.fromRGBO(
-                                                            126, 181, 166, 1),
-                                                        fontSize: 30,
-                                                        fontWeight:
-                                                            FontWeight.w700,
+                                                      snapshot.data!.size
+                                                          .toString(),
+                                                      style: GoogleFonts.sora(
+                                                        textStyle: TextStyle(
+                                                          color: Color.fromRGBO(
+                                                              126, 181, 166, 1),
+                                                          fontSize: 30,
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                        ),
                                                       ),
-                                                    ),
-                                                  );
-                                                }),
-                                          ),
-                                          Container(
-                                            child: Text(
-                                              " takipçi",
-                                              style: GoogleFonts.sora(
-                                                textStyle: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 20,
+                                                    );
+                                                  }),
+                                            ),
+                                            Container(
+                                              child: Text(
+                                                " takipçi",
+                                                style: GoogleFonts.sora(
+                                                  textStyle: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 20,
+                                                  ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                            child: StreamBuilder<QuerySnapshot>(
-                                                stream:
-                                                    getFollowStream(widget.uid),
-                                                builder: (BuildContext context,
-                                                    AsyncSnapshot<QuerySnapshot>
-                                                        snapshot) {
-                                                  if (snapshot.hasError) {
-                                                    return Text(
-                                                        'Something went wrong');
-                                                  }
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  FollowAndFollowers(
+                                                      true, widget.uid),
+                                            ),
+                                          );
+                                        },
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                  stream: DatabaseManager()
+                                                      .getFollowStream(
+                                                          widget.uid),
+                                                  builder:
+                                                      (BuildContext context,
+                                                          AsyncSnapshot<
+                                                                  QuerySnapshot>
+                                                              snapshot) {
+                                                    if (snapshot.hasError) {
+                                                      return Text(
+                                                          'Something went wrong');
+                                                    }
 
-                                                  if (snapshot
-                                                          .connectionState ==
-                                                      ConnectionState.waiting) {
-                                                    return Container();
-                                                  }
-                                                  return Text(
-                                                    snapshot.data!.size
-                                                        .toString(),
-                                                    style: GoogleFonts.sora(
-                                                      textStyle: TextStyle(
-                                                        color: Color.fromRGBO(
-                                                            126, 181, 166, 1),
-                                                        fontSize: 30,
-                                                        fontWeight:
-                                                            FontWeight.w700,
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return Container();
+                                                    }
+                                                    return Text(
+                                                      snapshot.data!.size
+                                                          .toString(),
+                                                      style: GoogleFonts.sora(
+                                                        textStyle: TextStyle(
+                                                          color: Color.fromRGBO(
+                                                              126, 181, 166, 1),
+                                                          fontSize: 30,
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                        ),
                                                       ),
-                                                    ),
-                                                  );
-                                                }),
-                                          ),
-                                          Container(
-                                            child: Text(
-                                              " takip",
-                                              style: GoogleFonts.sora(
-                                                textStyle: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 20,
+                                                    );
+                                                  }),
+                                            ),
+                                            Container(
+                                              child: Text(
+                                                " takip",
+                                                style: GoogleFonts.sora(
+                                                  textStyle: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 20,
+                                                  ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -1166,24 +1201,6 @@ class _Profile extends State<Profile> {
         LatLng(_locationData.latitude ?? 0.0, _locationData.longitude ?? 0.0);
 
     return currentloc;
-  }
-
-  Stream<QuerySnapshot> getFollowStream(String uid) {
-    final Stream<QuerySnapshot> _followStream = FirebaseFirestore.instance
-        .collection('follow')
-        .doc(uid)
-        .collection("userid")
-        .snapshots();
-    return _followStream;
-  }
-
-  Stream<QuerySnapshot> getFollowerStream() {
-    final Stream<QuerySnapshot> _followerStream = FirebaseFirestore.instance
-        .collection('follower')
-        .doc(widget.uid)
-        .collection("userid")
-        .snapshots();
-    return _followerStream;
   }
 
   Stream<DocumentSnapshot> isItFollow() {

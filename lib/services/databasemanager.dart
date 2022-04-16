@@ -19,8 +19,6 @@ class DatabaseManager {
           'username': nname,
           'name': name,
           'surname': surName,
-          'follow': 0,
-          'followers': 0,
           'timestamp': timestamp,
           'uid': uid,
         })
@@ -162,9 +160,9 @@ class DatabaseManager {
             .collection("userid")
             .doc(uid)
             .set({
-              'followid': followid,
+              'followid': uid,
               'timestamp': timestamp,
-              'uid': uid,
+              'uid': followid,
             })
             .then((value) => print("follower added"))
             .catchError((error) => print("Failed to add follower: $error"));
@@ -213,5 +211,23 @@ class DatabaseManager {
         })
         .then((value) => print("Loc Added"))
         .catchError((error) => print("Failed to add location: $error"));
+  }
+
+  Stream<QuerySnapshot> getFollowStream(String uid) {
+    final Stream<QuerySnapshot> _followStream = FirebaseFirestore.instance
+        .collection('follow')
+        .doc(uid)
+        .collection("userid")
+        .snapshots();
+    return _followStream;
+  }
+
+  Stream<QuerySnapshot> getFollowerStream(String uid) {
+    final Stream<QuerySnapshot> _followerStream = FirebaseFirestore.instance
+        .collection('follower')
+        .doc(uid)
+        .collection("userid")
+        .snapshots();
+    return _followerStream;
   }
 }

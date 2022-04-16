@@ -13,6 +13,8 @@ import 'package:photogram/services/authentication_service.dart';
 import 'package:provider/provider.dart';
 import 'package:rive/rive.dart' as riv;
 
+import '../services/databasemanager.dart';
+
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
 
@@ -26,13 +28,18 @@ class _MainState extends State<MainScreen> {
   );
   TextEditingController searchController = TextEditingController();
   int shdwtmp = 0;
+  Query<Map<String, dynamic>> _userPosts =
+      FirebaseFirestore.instance.collection('locs');
+  var tmp = 0;
   @override
   Widget build(BuildContext context) {
     final _firestore = FirebaseFirestore.instance;
-    CollectionReference _userPosts = _firestore
-        .collection('posts')
+
+    CollectionReference _timeline = _firestore
+        .collection('follow')
         .doc(AuthenticationService().getUser())
-        .collection('userPosts');
+        .collection('userid');
+
     final Stream<DocumentSnapshot> users = _firestore
         .collection('users')
         .doc(AuthenticationService().getUser())
@@ -45,7 +52,7 @@ class _MainState extends State<MainScreen> {
         child: PageView(
           controller: controller,
           children: [
-            mainPage1(height, width, authService, users, _userPosts),
+            mainPage1(height, width, authService, users, _timeline),
             mainPage2(height, width),
           ],
         ),
@@ -53,8 +60,7 @@ class _MainState extends State<MainScreen> {
     );
   }
 
-  Widget mainPage1(
-      double height, double width, authService, users, _userPosts) {
+  Widget mainPage1(double height, double width, authService, users, _timeline) {
     return Container(
       child: Stack(
         children: [
@@ -94,7 +100,7 @@ class _MainState extends State<MainScreen> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => Profile(
-                                        AuthenticationService().getUser(), 1),
+                                        AuthenticationService().getUser()),
                                   ),
                                 );
                               },
@@ -140,17 +146,39 @@ class _MainState extends State<MainScreen> {
                                             MainAxisAlignment.center,
                                         children: [
                                           Container(
-                                            child: Text(
-                                              data['followers'].toString(),
-                                              style: GoogleFonts.roboto(
-                                                textStyle: TextStyle(
-                                                  color: Color.fromRGBO(
-                                                      126, 181, 166, 1),
-                                                  fontSize: 30,
-                                                  fontWeight: FontWeight.w700,
-                                                ),
-                                              ),
-                                            ),
+                                            child: StreamBuilder<QuerySnapshot>(
+                                                stream: DatabaseManager()
+                                                    .getFollowerStream(
+                                                        AuthenticationService()
+                                                            .getUser()),
+                                                builder: (BuildContext context,
+                                                    AsyncSnapshot<QuerySnapshot>
+                                                        snapshot) {
+                                                  if (snapshot.hasError) {
+                                                    return Text(
+                                                        'Something went wrong');
+                                                  }
+
+                                                  if (snapshot
+                                                          .connectionState ==
+                                                      ConnectionState.waiting) {
+                                                    return Container();
+                                                  }
+
+                                                  return Text(
+                                                    snapshot.data!.size
+                                                        .toString(),
+                                                    style: GoogleFonts.roboto(
+                                                      textStyle: TextStyle(
+                                                        color: Color.fromRGBO(
+                                                            126, 181, 166, 1),
+                                                        fontSize: 30,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                      ),
+                                                    ),
+                                                  );
+                                                }),
                                           ),
                                           Container(
                                             child: Text(
@@ -171,16 +199,39 @@ class _MainState extends State<MainScreen> {
                                             MainAxisAlignment.center,
                                         children: [
                                           Container(
-                                            child: Text(
-                                              data['follow'].toString(),
-                                              style: GoogleFonts.roboto(
-                                                textStyle: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 30,
-                                                  fontWeight: FontWeight.w700,
-                                                ),
-                                              ),
-                                            ),
+                                            child: StreamBuilder<QuerySnapshot>(
+                                                stream: DatabaseManager()
+                                                    .getFollowStream(
+                                                        AuthenticationService()
+                                                            .getUser()),
+                                                builder: (BuildContext context,
+                                                    AsyncSnapshot<QuerySnapshot>
+                                                        snapshot) {
+                                                  if (snapshot.hasError) {
+                                                    return Text(
+                                                        'Something went wrong');
+                                                  }
+
+                                                  if (snapshot
+                                                          .connectionState ==
+                                                      ConnectionState.waiting) {
+                                                    return Container();
+                                                  }
+
+                                                  return Text(
+                                                    snapshot.data!.size
+                                                        .toString(),
+                                                    style: GoogleFonts.roboto(
+                                                      textStyle: TextStyle(
+                                                        color: Color.fromRGBO(
+                                                            126, 181, 166, 1),
+                                                        fontSize: 30,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                      ),
+                                                    ),
+                                                  );
+                                                }),
                                           ),
                                           Container(
                                             child: Text(
@@ -205,52 +256,161 @@ class _MainState extends State<MainScreen> {
                         ),
                       ),
                       FutureBuilder<QuerySnapshot>(
-                        future: _userPosts.get(),
-                        builder: (BuildContext context,
-                            AsyncSnapshot<QuerySnapshot> snapshot) {
-                          if (snapshot.hasData) {
-                            if (snapshot.data!.docs.isEmpty) {
-                              return Flexible(
-                                child: Container(
-                                  width: width,
-                                  color: Color.fromRGBO(255, 255, 255, 0.4),
-                                  child: Center(
-                                    child: Text(
-                                      "Bir paylaşım bulunamadı",
-                                      style: GoogleFonts.roboto(
-                                        textStyle: TextStyle(
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.w300,
+                          future: _timeline.get(),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<QuerySnapshot> snapshot) {
+                            if (snapshot.hasError) {
+                              return Text('Something went wrong');
+                            }
+
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Text("Loading");
+                            }
+
+                            List asd = snapshot.data!.docs
+                                .map((DocumentSnapshot document) {
+                              data = document.data()! as Map<String, dynamic>;
+                              return data;
+                            }).toList();
+                            if (tmp == 0) {
+                              for (var i = 0; i < asd.length; i++) {
+                                _userPosts = _userPosts.where('uid',
+                                    isEqualTo: asd[i]['followid'].toString());
+                              }
+                              tmp = 1;
+                            }
+                            if (snapshot.hasData) {
+                              if (snapshot.data!.docs.isEmpty) {
+                                return Flexible(
+                                  child: Container(
+                                    width: width,
+                                    color: Color.fromRGBO(255, 255, 255, 0.4),
+                                    child: Center(
+                                      child: Text(
+                                        "Paylaşımları görebilmek için, birilerini takip etmelisin",
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.roboto(
+                                          textStyle: TextStyle(
+                                            fontSize: 25,
+                                            fontWeight: FontWeight.w300,
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
+                                );
+                              }
+                              return FutureBuilder<QuerySnapshot>(
+                                future: _userPosts.get(),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                                  if (snapshot.hasData) {
+                                    if (snapshot.data!.docs.isEmpty) {
+                                      return Flexible(
+                                        child: Container(
+                                          width: width,
+                                          color: Color.fromRGBO(
+                                              255, 255, 255, 0.4),
+                                          child: Center(
+                                            child: Text(
+                                              "Bir paylaşım bulunamadı",
+                                              style: GoogleFonts.roboto(
+                                                textStyle: TextStyle(
+                                                  fontSize: 25,
+                                                  fontWeight: FontWeight.w300,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                    return Flexible(
+                                      child: ListView(
+                                        padding: EdgeInsets.zero,
+                                        children: snapshot.data!.docs
+                                            .map((DocumentSnapshot document) {
+                                          Map<String, dynamic> data = document
+                                              .data()! as Map<String, dynamic>;
+
+                                          var mediaLat = data['Lat'];
+                                          var mediaLng = data['Lng'];
+                                          var mediaUrl = data['mediaUrl'];
+                                          return FutureBuilder<
+                                              DocumentSnapshot>(
+                                            future: FirebaseFirestore.instance
+                                                .collection('users')
+                                                .doc(data['uid'])
+                                                .get(),
+                                            builder: (BuildContext context,
+                                                AsyncSnapshot<DocumentSnapshot>
+                                                    snapshot) {
+                                              if (snapshot.hasError) {
+                                                return Text(
+                                                    "Bir şeyler ters gitti");
+                                              }
+
+                                              if (snapshot.hasData &&
+                                                  !snapshot.data!.exists) {
+                                                return Text(
+                                                    "Document does not exist");
+                                              }
+
+                                              if (snapshot.connectionState ==
+                                                  ConnectionState.done) {
+                                                Map<String, dynamic> data =
+                                                    snapshot.data!.data()
+                                                        as Map<String, dynamic>;
+                                                return Container(
+                                                  color: Color.fromRGBO(
+                                                      255, 255, 255, 0.4),
+                                                  child: content(
+                                                      height,
+                                                      width,
+                                                      mediaUrl,
+                                                      data['mediaUrl'],
+                                                      data['username'],
+                                                      data['uid'],
+                                                      "loc:" +
+                                                          mediaLat.toString() +
+                                                          "," +
+                                                          mediaLng.toString()),
+                                                );
+                                              }
+
+                                              return Container();
+                                            },
+                                          );
+                                        }).toList(),
+                                      ),
+                                    );
+                                  }
+                                  return Flexible(
+                                      child: Center(
+                                    child: CircularProgressIndicator(),
+                                  ));
+                                },
                               );
                             }
                             return Flexible(
-                              child: ListView(
-                                padding: EdgeInsets.zero,
-                                children: snapshot.data!.docs
-                                    .map((DocumentSnapshot document) {
-                                  Map<String, dynamic> data =
-                                      document.data()! as Map<String, dynamic>;
-                                  return content(
-                                      width,
-                                      data['mediaUrl'],
-                                      'b.JPEG',
-                                      "bbs",
-                                      "loc: 40.175339, 29.172160");
-                                }).toList(),
+                              child: Container(
+                                width: width,
+                                color: Color.fromRGBO(255, 255, 255, 0.4),
+                                child: Center(
+                                  child: Text(
+                                    "Veriler getirilken bir hata meydana geldi",
+                                    style: GoogleFonts.roboto(
+                                      textStyle: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w300,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
                             );
-                          }
-                          return Flexible(
-                              child: Center(
-                            child: CircularProgressIndicator(),
-                          ));
-                        },
-                      ),
+                          }),
                     ],
                   ),
                 ),
@@ -457,72 +617,73 @@ class _MainState extends State<MainScreen> {
     );
   }
 
-  Widget content(double width, String pic, ppic, String uname, String loc) {
+  Widget content(double height, double width, String pic, ppic, String uname,
+      String uid, String loc) {
     return Container(
       child: Stack(
         children: [
           Container(
             width: width,
-            color: Color.fromRGBO(255, 255, 255, 0.4),
             child: Column(
               children: [
-                Container(
-                  child: Row(
-                    children: [
-                      Container(
-                        width: width * 0.2,
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          child: Center(
-                            child: AspectRatio(
-                              aspectRatio: 1 / 1,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color:
-                                          Color.fromRGBO(183, 174, 174, 0.25),
-                                      blurRadius: 5,
-                                      spreadRadius: 1,
-                                      offset: Offset(-5, -5),
-                                    ),
-                                    BoxShadow(
-                                      color: Color.fromRGBO(0, 0, 0, 0.25),
-                                      blurRadius: 5,
-                                      spreadRadius: 1,
-                                      offset: Offset(5, 5),
-                                    ),
-                                  ],
-                                  color: Color.fromRGBO(255, 255, 255, 1),
-                                  borderRadius: BorderRadius.circular(100),
-                                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Profile(uid),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    child: Row(
+                      children: [
+                        Container(
+                          width: width * 0.2,
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            child: Center(
+                              child: AspectRatio(
+                                aspectRatio: 1 / 1,
                                 child: Container(
-                                  margin: EdgeInsets.all(3),
                                   decoration: BoxDecoration(
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color:
+                                            Color.fromRGBO(183, 174, 174, 0.25),
+                                        blurRadius: 5,
+                                        spreadRadius: 1,
+                                        offset: Offset(-5, -5),
+                                      ),
+                                      BoxShadow(
+                                        color: Color.fromRGBO(0, 0, 0, 0.25),
+                                        blurRadius: 5,
+                                        spreadRadius: 1,
+                                        offset: Offset(5, 5),
+                                      ),
+                                    ],
+                                    color: Color.fromRGBO(255, 255, 255, 1),
                                     borderRadius: BorderRadius.circular(100),
-                                    image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: AssetImage("pics/" + ppic),
-                                    ),
                                   ),
+                                  child: getProfilePic(ppic),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      Container(
-                        child: Text(
-                          uname,
-                          style: GoogleFonts.roboto(
-                            textStyle: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 20,
+                        Container(
+                          child: Text(
+                            uname,
+                            style: GoogleFonts.roboto(
+                              textStyle: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 20,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 Container(
@@ -531,7 +692,7 @@ class _MainState extends State<MainScreen> {
                     children: [
                       Center(
                         child: Container(
-                          margin: EdgeInsets.all(20),
+                          margin: EdgeInsets.all(10),
                           padding: EdgeInsets.all(8),
                           decoration: BoxDecoration(
                             color: Colors.white,
