@@ -15,6 +15,7 @@ import 'package:uuid/uuid.dart';
 import 'package:rive/rive.dart' as riv;
 
 import '../profile/profile.dart';
+import '../services/databasemanager.dart';
 
 class SearchLocation extends StatefulWidget {
   const SearchLocation({Key? key}) : super(key: key);
@@ -308,6 +309,8 @@ class _SearchLocation extends State<SearchLocation> {
                                           var mediaUrl = data['mediaUrl'];
                                           var mediaLat = data['Lat'];
                                           var mediaLng = data['Lng'];
+                                          var mediaId = data['locId'];
+                                          var mediaLikeCount = data['like'];
                                           return FutureBuilder<
                                               DocumentSnapshot>(
                                             future: FirebaseFirestore.instance
@@ -337,6 +340,8 @@ class _SearchLocation extends State<SearchLocation> {
                                                   height,
                                                   width,
                                                   mediaUrl,
+                                                  mediaId,
+                                                  mediaLikeCount,
                                                   data['mediaUrl'],
                                                   data['username'],
                                                   "loc:" +
@@ -522,8 +527,8 @@ class _SearchLocation extends State<SearchLocation> {
     }
   }
 
-  Widget content(double height, double width, String pic, ppic, String uname,
-      String loc, String uid) {
+  Widget content(double height, double width, String pic, String mediaId,
+      mediaLikeCount, ppic, String uname, String loc, String uid) {
     return Container(
       child: Stack(
         children: [
@@ -626,14 +631,52 @@ class _SearchLocation extends State<SearchLocation> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Container(
-                        height: 50,
-                        width: 50,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage("pics/heart.png"),
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              DatabaseManager().controlLike(mediaId);
+                            },
+                            child: StreamBuilder<QuerySnapshot>(
+                                stream: DatabaseManager().isItLiked(
+                                    AuthenticationService().getUser(), mediaId),
+                                builder: (context,
+                                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                                  if (!snapshot.hasData ||
+                                      snapshot.data!.docs.length == 0) {
+                                    return Container(
+                                      height: 50,
+                                      width: 50,
+                                      padding: EdgeInsets.all(5),
+                                      child: Image(
+                                          image: AssetImage("pics/heart.png")),
+                                    );
+                                  }
+                                  return Container(
+                                    height: 50,
+                                    width: 50,
+                                    padding: EdgeInsets.all(5),
+                                    child: riv.RiveAnimation.asset(
+                                      "animations/like.riv",
+                                      fit: BoxFit.cover,
+                                    ),
+                                  );
+                                }),
                           ),
-                        ),
+                          StreamBuilder<DocumentSnapshot>(
+                            stream: DatabaseManager().getLikeStream(mediaId),
+                            builder: (context,
+                                AsyncSnapshot<DocumentSnapshot> snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Container();
+                              }
+                              Map<String, dynamic> data =
+                                  snapshot.data!.data() as Map<String, dynamic>;
+                              return Text(data['like'].toString());
+                            },
+                          ),
+                        ],
                       ),
                       Container(
                         child: Text(

@@ -67,6 +67,57 @@ class DatabaseManager {
         .catchError((error) => print("Failed to add posts: $error"));
   }
 
+  controlLike(
+    String postId,
+  ) {
+    final auth.User? user = _firebaseAuth.currentUser;
+    final uid = user!.uid;
+    CollectionReference posts = _firestore.collection('posts');
+    CollectionReference locs = _firestore.collection('locs');
+    posts
+        .doc(uid)
+        .collection("userLikes")
+        .where('postId', isEqualTo: postId)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      if (querySnapshot.docs.length == 0 || querySnapshot.docs.isEmpty) {
+        posts
+            .doc(uid)
+            .collection("userLikes")
+            .doc(postId)
+            .set({
+              'postId': postId,
+              'timestamp': timestamp,
+              'uid': uid,
+            })
+            .then((value) => print("Post Added"))
+            .catchError((error) => print("Failed to add posts: $error"));
+        locs
+            .doc(postId)
+            .update({
+              'like': FieldValue.increment(1),
+            })
+            .then((value) => print("User Updated"))
+            .catchError((error) => print("Failed to update user: $error"));
+      } else {
+        posts
+            .doc(uid)
+            .collection("userLikes")
+            .doc(postId)
+            .delete()
+            .then((value) => print("Like Deleted"))
+            .catchError((error) => print("Failed to Like : $error"));
+        locs
+            .doc(postId)
+            .update({
+              'like': FieldValue.increment(-1),
+            })
+            .then((value) => print("User Updated"))
+            .catchError((error) => print("Failed to update user: $error"));
+      }
+    });
+  }
+
   Future<void> addSavedLocs(
     List location,
     String description,
@@ -207,27 +258,54 @@ class DatabaseManager {
           'timestamp': timestamp,
           'locId': postId,
           'uid': uid,
+          'like': 0,
           'mediaUrl': mediaUrl,
         })
         .then((value) => print("Loc Added"))
         .catchError((error) => print("Failed to add location: $error"));
   }
 
-  Stream<QuerySnapshot> getFollowStream(String uid) {
-    final Stream<QuerySnapshot> _followStream = FirebaseFirestore.instance
-        .collection('follow')
-        .doc(uid)
-        .collection("userid")
-        .snapshots();
-    return _followStream;
+  getFollowStream(uid) {
+    if (uid != null) {
+      final Stream<QuerySnapshot> _followStream = FirebaseFirestore.instance
+          .collection('follow')
+          .doc(uid)
+          .collection("userid")
+          .snapshots();
+      return _followStream;
+    }
   }
 
-  Stream<QuerySnapshot> getFollowerStream(String uid) {
-    final Stream<QuerySnapshot> _followerStream = FirebaseFirestore.instance
-        .collection('follower')
-        .doc(uid)
-        .collection("userid")
-        .snapshots();
-    return _followerStream;
+  getFollowerStream(uid) {
+    if (uid != null) {
+      final Stream<QuerySnapshot> _followerStream = FirebaseFirestore.instance
+          .collection('follower')
+          .doc(uid)
+          .collection("userid")
+          .snapshots();
+      return _followerStream;
+    }
+  }
+
+  getLikeStream(mediaid) {
+    if (mediaid != null) {
+      final Stream<DocumentSnapshot> _likeStream = FirebaseFirestore.instance
+          .collection('locs')
+          .doc(mediaid)
+          .snapshots();
+      return _likeStream;
+    }
+  }
+
+  isItLiked(uid, mediaId) {
+    if (uid != null) {
+      final Stream<QuerySnapshot> _likeStream = FirebaseFirestore.instance
+          .collection('posts')
+          .doc(uid)
+          .collection('userLikes')
+          .where("postId", isEqualTo: mediaId)
+          .snapshots();
+      return _likeStream;
+    }
   }
 }

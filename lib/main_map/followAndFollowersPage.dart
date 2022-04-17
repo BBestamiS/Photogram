@@ -30,14 +30,11 @@ class _FollowAndFollowers extends State<FollowAndFollowers> {
     CollectionReference users = FirebaseFirestore.instance.collection('users');
     final Query<Map<String, dynamic>> _usersStream;
     if (widget.isItFollow) {
-      print("follow kısmına girdiiiiiiiiiiiiiiiiiii");
       _usersStream = FirebaseFirestore.instance
           .collection('follow')
           .doc(widget.uid)
           .collection("userid");
     } else {
-      print("follower kısmına girdiiiiiiiiiiiiiiiiiii");
-      print("kullanıcı id'si = " + widget.uid);
       _usersStream = FirebaseFirestore.instance
           .collection('follower')
           .doc(widget.uid)

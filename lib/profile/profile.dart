@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:photogram/main_map/find.dart';
 import 'package:photogram/main_map/followAndFollowersPage.dart';
+import 'package:photogram/main_map/keepAliveFutureBuilder.dart';
 import 'package:photogram/main_map/share.dart';
 import 'package:photogram/profile/settings.dart';
 import 'package:photogram/services/authentication_service.dart';
@@ -588,17 +589,14 @@ class _Profile extends State<Profile> {
                                                     document.data()!
                                                         as Map<String, dynamic>;
                                                 var mediaUrl = data['mediaUrl'];
-
-                                                return FutureBuilder<
-                                                        DocumentSnapshot>(
+                                                return KeepAliveFutureBuilder(
                                                     future: FirebaseFirestore
                                                         .instance
                                                         .collection('locs')
                                                         .doc(data['locId'])
                                                         .get(),
                                                     builder: (context,
-                                                        AsyncSnapshot<
-                                                                DocumentSnapshot>
+                                                        AsyncSnapshot
                                                             snapshot) {
                                                       if (snapshot.hasError) {
                                                         return Text(
@@ -625,6 +623,10 @@ class _Profile extends State<Profile> {
                                                             data['Lat'];
                                                         var mediaLng =
                                                             data['Lng'];
+                                                        var mediaId =
+                                                            data['locId'];
+                                                        var mediaLikeCount =
+                                                            data['like'];
                                                         return FutureBuilder<
                                                             DocumentSnapshot>(
                                                           future:
@@ -670,6 +672,8 @@ class _Profile extends State<Profile> {
                                                                   height,
                                                                   width,
                                                                   mediaUrl,
+                                                                  mediaId,
+                                                                  mediaLikeCount,
                                                                   data[
                                                                       'mediaUrl'],
                                                                   data[
@@ -1034,8 +1038,8 @@ class _Profile extends State<Profile> {
     );
   }
 
-  Widget content(
-      double height, double width, String pic, ppic, String uname, String loc) {
+  Widget content(double height, double width, String pic, String mediaId,
+      mediaLikeCount, ppic, String uname, String loc) {
     return Container(
       child: Stack(
         children: [
@@ -1095,7 +1099,6 @@ class _Profile extends State<Profile> {
                 ),
                 Container(
                   width: width,
-                  height: height * 0.6,
                   child: Stack(
                     children: [
                       Center(
@@ -1119,14 +1122,52 @@ class _Profile extends State<Profile> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Container(
-                        height: 50,
-                        width: 50,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage("pics/heart.png"),
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              DatabaseManager().controlLike(mediaId);
+                            },
+                            child: StreamBuilder<QuerySnapshot>(
+                                stream: DatabaseManager().isItLiked(
+                                    AuthenticationService().getUser(), mediaId),
+                                builder: (context,
+                                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                                  if (!snapshot.hasData ||
+                                      snapshot.data!.docs.length == 0) {
+                                    return Container(
+                                      height: 50,
+                                      width: 50,
+                                      padding: EdgeInsets.all(5),
+                                      child: Image(
+                                          image: AssetImage("pics/heart.png")),
+                                    );
+                                  }
+                                  return Container(
+                                    height: 50,
+                                    width: 50,
+                                    padding: EdgeInsets.all(5),
+                                    child: riv.RiveAnimation.asset(
+                                      "animations/like.riv",
+                                      fit: BoxFit.cover,
+                                    ),
+                                  );
+                                }),
                           ),
-                        ),
+                          StreamBuilder<DocumentSnapshot>(
+                            stream: DatabaseManager().getLikeStream(mediaId),
+                            builder: (context,
+                                AsyncSnapshot<DocumentSnapshot> snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Container();
+                              }
+                              Map<String, dynamic> data =
+                                  snapshot.data!.data() as Map<String, dynamic>;
+                              return Text(data['like'].toString());
+                            },
+                          ),
+                        ],
                       ),
                       Container(
                         child: Text(
@@ -1203,13 +1244,15 @@ class _Profile extends State<Profile> {
     return currentloc;
   }
 
-  Stream<DocumentSnapshot> isItFollow() {
-    final Stream<DocumentSnapshot> _followStream = FirebaseFirestore.instance
-        .collection('follow')
-        .doc(AuthenticationService().getUser())
-        .collection("userid")
-        .doc(widget.uid)
-        .snapshots();
-    return _followStream;
+  isItFollow() {
+    if (AuthenticationService().getUser() != null) {
+      final Stream<DocumentSnapshot> _followStream = FirebaseFirestore.instance
+          .collection('follow')
+          .doc(AuthenticationService().getUser())
+          .collection("userid")
+          .doc(widget.uid)
+          .snapshots();
+      return _followStream;
+    }
   }
 }
