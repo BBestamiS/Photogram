@@ -1,7 +1,7 @@
 ## Photogram 
 
-Photogram is a social platform for photographer. but this app is not like other social media platform. I developed this app, because finding a beuty place is the biggest problem of photographers. Is it just for photographers? __No__ anyone can use this app. What does this app provide? Discover beautiful locations, create your own community, save beautiful locations and access them anytime and provides many more features. If you are interested? Start exploring.  
-
+ 
+<p align="center" > Photogram is a social platform for photographer. but this app is not like other social media platform. I developed this app, because finding a beuty place is the biggest problem of photographers. Is it just for photographers? __No__ anyone can use this app. What does this app provide? Discover beautiful locations, create your own community, save beautiful locations and access them anytime and provides many more features. If you are interested? Start exploring.  </p>
 
 -----
 
