@@ -265,18 +265,20 @@ class _MainState extends State<MainScreen> {
                             return Container();
                           }
 
-                          List asd = snapshot.data!.docs
+                          List followIdList = snapshot.data!.docs
                               .map((DocumentSnapshot document) {
                             data = document.data()! as Map<String, dynamic>;
                             return data;
                           }).toList();
+                          List userIdList = [];
                           if (tmp == 0) {
-                            for (var i = 0; i < asd.length; i++) {
-                              _userPosts = _userPosts.where('uid',
-                                  isEqualTo: asd[i]['followid'].toString());
+                            for (var i = 0; i < followIdList.length; i++) {
+                              userIdList
+                                  .add(followIdList[i]['followid'].toString());
                             }
                             tmp = 1;
                           }
+
                           if (snapshot.hasData) {
                             if (snapshot.data!.docs.isEmpty) {
                               return Flexible(
@@ -300,6 +302,7 @@ class _MainState extends State<MainScreen> {
                             }
                             return FutureBuilder<QuerySnapshot>(
                               future: _userPosts
+                                  .where('uid', whereIn: userIdList)
                                   .orderBy('timestamp', descending: true)
                                   .get(),
                               builder: (BuildContext context,
