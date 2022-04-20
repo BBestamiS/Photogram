@@ -9,6 +9,9 @@ import 'package:photogram/share/savedloc.dart';
 import 'package:photogram/wrapper.dart';
 import 'package:rive/rive.dart' as riv;
 
+import '../services/authentication_service.dart';
+import '../services/databasemanager.dart';
+
 class FindAccount extends StatefulWidget {
   FindAccount(this.searchText);
   var searchText;
@@ -75,11 +78,17 @@ class _FindAccount extends State<FindAccount> {
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
-                                                Profile(data['uid'], 0),
+                                                Profile(data['uid']),
                                           ),
                                         );
                                       },
                                       child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Color.fromRGBO(
+                                              255, 255, 255, 0.5),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
                                         width: width,
                                         height: 100,
                                         child: Row(
@@ -150,8 +159,34 @@ class _FindAccount extends State<FindAccount> {
                                                                       .bold,
                                                               fontSize: 15)),
                                                     ),
-                                                    Text(data['follow']
-                                                        .toString()),
+                                                    StreamBuilder<
+                                                            QuerySnapshot>(
+                                                        stream: DatabaseManager()
+                                                            .getFollowStream(
+                                                                data['uid']),
+                                                        builder: (BuildContext
+                                                                context,
+                                                            AsyncSnapshot<
+                                                                    QuerySnapshot>
+                                                                snapshot) {
+                                                          if (snapshot
+                                                              .hasError) {
+                                                            return Text(
+                                                                'Something went wrong');
+                                                          }
+
+                                                          if (snapshot
+                                                                  .connectionState ==
+                                                              ConnectionState
+                                                                  .waiting) {
+                                                            return Container();
+                                                          }
+
+                                                          return Text(
+                                                            snapshot.data!.size
+                                                                .toString(),
+                                                          );
+                                                        }),
                                                   ],
                                                 ),
                                                 Row(
@@ -165,8 +200,34 @@ class _FindAccount extends State<FindAccount> {
                                                                       .bold,
                                                               fontSize: 15)),
                                                     ),
-                                                    Text(data['followers']
-                                                        .toString()),
+                                                    StreamBuilder<
+                                                            QuerySnapshot>(
+                                                        stream: DatabaseManager()
+                                                            .getFollowerStream(
+                                                                data['uid']),
+                                                        builder: (BuildContext
+                                                                context,
+                                                            AsyncSnapshot<
+                                                                    QuerySnapshot>
+                                                                snapshot) {
+                                                          if (snapshot
+                                                              .hasError) {
+                                                            return Text(
+                                                                'Something went wrong');
+                                                          }
+
+                                                          if (snapshot
+                                                                  .connectionState ==
+                                                              ConnectionState
+                                                                  .waiting) {
+                                                            return Container();
+                                                          }
+
+                                                          return Text(
+                                                            snapshot.data!.size
+                                                                .toString(),
+                                                          );
+                                                        }),
                                                   ],
                                                 ),
                                               ],

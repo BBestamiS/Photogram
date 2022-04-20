@@ -1,16 +1,44 @@
-# photogram
+## Photogram 
 
-A new Flutter project.
+Photogram is a social platform for photographer. but this app is not like other social media platform. I developed this app, because finding a beuty place is the biggest problem of photographers. Is it just for photographers? __No__ anyone can use this app. What does this app provide? Discover beautiful locations, create your own community, save beautiful locations and access them anytime and provides many more features. If you are interested? Start exploring.  
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+-----
 
-A few resources to get you started if this is your first Flutter project:
+## Technologies Used 
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+* Flutter
+* Firebase
+* Google Maps Api
+* Geodecoder
+* Rive
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+--------
+
+## Screenshot 📸
+
+### Login
+
+<p align="center"><img width="850px" src="/pics/md/1.png" alt="Screen Shoooot" style="zoom:33%;" /></p>
+
+### Home Page
+
+<p align="center"><img width="850px" src="/pics/md/2.png" alt="Screen Shoooot" style="zoom:33%;" /></p>
+
+### Find Loc
+
+<p align="center"><img width="850px" src="/pics/md/3.png" alt="Screen Shoooot" style="zoom:33%;" /></p>
+
+### Upload
+
+<p align="center"><img width="850px" src="/pics/md/4.png" alt="Screen Shoooot" style="zoom:33%;" /></p>
+
+---
+
+
+## Do you like it 🚀
+
+If you want to see more design like this, follow my
+
+- [insta => bestami_sarikaya](https://www.instagram.com/bestami_sarikaya/) 
+- [unsplash => bbestamis](https://unsplash.com/@bbestamis)

@@ -9,9 +9,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as loc;
 import 'package:photogram/main_map/find.dart';
+import 'package:photogram/services/authentication_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 import 'package:rive/rive.dart' as riv;
+
+import '../profile/profile.dart';
+import '../services/databasemanager.dart';
 
 class SearchLocation extends StatefulWidget {
   const SearchLocation({Key? key}) : super(key: key);
@@ -305,6 +309,8 @@ class _SearchLocation extends State<SearchLocation> {
                                           var mediaUrl = data['mediaUrl'];
                                           var mediaLat = data['Lat'];
                                           var mediaLng = data['Lng'];
+                                          var mediaId = data['locId'];
+                                          var mediaLikeCount = data['like'];
                                           return FutureBuilder<
                                               DocumentSnapshot>(
                                             future: FirebaseFirestore.instance
@@ -331,15 +337,19 @@ class _SearchLocation extends State<SearchLocation> {
                                                     snapshot.data!.data()
                                                         as Map<String, dynamic>;
                                                 return content(
-                                                    height,
-                                                    width,
-                                                    mediaUrl,
-                                                    data['mediaUrl'],
-                                                    data['username'],
-                                                    "loc:" +
-                                                        mediaLat.toString() +
-                                                        "," +
-                                                        mediaLng.toString());
+                                                  height,
+                                                  width,
+                                                  mediaUrl,
+                                                  mediaId,
+                                                  mediaLikeCount,
+                                                  data['mediaUrl'],
+                                                  data['username'],
+                                                  "loc:" +
+                                                      mediaLat.toString() +
+                                                      "," +
+                                                      mediaLng.toString(),
+                                                  data['uid'],
+                                                );
                                               }
 
                                               return Container();
@@ -517,8 +527,8 @@ class _SearchLocation extends State<SearchLocation> {
     }
   }
 
-  Widget content(
-      double height, double width, String pic, ppic, String uname, String loc) {
+  Widget content(double height, double width, String pic, String mediaId,
+      mediaLikeCount, ppic, String uname, String loc, String uid) {
     return Container(
       child: Stack(
         children: [
@@ -526,54 +536,73 @@ class _SearchLocation extends State<SearchLocation> {
             width: width,
             child: Column(
               children: [
-                Container(
-                  child: Row(
-                    children: [
-                      Container(
-                        width: width * 0.2,
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          child: Center(
-                            child: AspectRatio(
-                              aspectRatio: 1 / 1,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color:
-                                          Color.fromRGBO(183, 174, 174, 0.25),
-                                      blurRadius: 5,
-                                      spreadRadius: 1,
-                                      offset: Offset(-5, -5),
-                                    ),
-                                    BoxShadow(
-                                      color: Color.fromRGBO(0, 0, 0, 0.25),
-                                      blurRadius: 5,
-                                      spreadRadius: 1,
-                                      offset: Offset(5, 5),
-                                    ),
-                                  ],
-                                  color: Color.fromRGBO(255, 255, 255, 1),
-                                  borderRadius: BorderRadius.circular(100),
+                GestureDetector(
+                  onTap: () {
+                    if (AuthenticationService().getUser() == uid) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Profile(uid),
+                        ),
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Profile(uid),
+                        ),
+                      );
+                    }
+                  },
+                  child: Container(
+                    child: Row(
+                      children: [
+                        Container(
+                          width: width * 0.2,
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            child: Center(
+                              child: AspectRatio(
+                                aspectRatio: 1 / 1,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color:
+                                            Color.fromRGBO(183, 174, 174, 0.25),
+                                        blurRadius: 5,
+                                        spreadRadius: 1,
+                                        offset: Offset(-5, -5),
+                                      ),
+                                      BoxShadow(
+                                        color: Color.fromRGBO(0, 0, 0, 0.25),
+                                        blurRadius: 5,
+                                        spreadRadius: 1,
+                                        offset: Offset(5, 5),
+                                      ),
+                                    ],
+                                    color: Color.fromRGBO(255, 255, 255, 1),
+                                    borderRadius: BorderRadius.circular(100),
+                                  ),
+                                  child: getProfilePic(ppic),
                                 ),
-                                child: getProfilePic(ppic),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      Container(
-                        child: Text(
-                          uname,
-                          style: GoogleFonts.roboto(
-                            textStyle: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 20,
+                        Container(
+                          child: Text(
+                            uname,
+                            style: GoogleFonts.roboto(
+                              textStyle: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 20,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 Container(
@@ -602,14 +631,52 @@ class _SearchLocation extends State<SearchLocation> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Container(
-                        height: 50,
-                        width: 50,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage("pics/heart.png"),
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              DatabaseManager().controlLike(mediaId);
+                            },
+                            child: StreamBuilder<QuerySnapshot>(
+                                stream: DatabaseManager().isItLiked(
+                                    AuthenticationService().getUser(), mediaId),
+                                builder: (context,
+                                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                                  if (!snapshot.hasData ||
+                                      snapshot.data!.docs.length == 0) {
+                                    return Container(
+                                      height: 50,
+                                      width: 50,
+                                      padding: EdgeInsets.all(5),
+                                      child: Image(
+                                          image: AssetImage("pics/heart.png")),
+                                    );
+                                  }
+                                  return Container(
+                                    height: 50,
+                                    width: 50,
+                                    padding: EdgeInsets.all(5),
+                                    child: riv.RiveAnimation.asset(
+                                      "animations/like.riv",
+                                      fit: BoxFit.cover,
+                                    ),
+                                  );
+                                }),
                           ),
-                        ),
+                          StreamBuilder<DocumentSnapshot>(
+                            stream: DatabaseManager().getLikeStream(mediaId),
+                            builder: (context,
+                                AsyncSnapshot<DocumentSnapshot> snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Container();
+                              }
+                              Map<String, dynamic> data =
+                                  snapshot.data!.data() as Map<String, dynamic>;
+                              return Text(data['like'].toString());
+                            },
+                          ),
+                        ],
                       ),
                       Container(
                         child: Text(
