@@ -17,21 +17,9 @@ Photogram is a social platform for photographer. but this app is not like other 
 
 ## Screenshot 📸
 
-### Login
 
-<p align="center"><img width="850px" src="/pics/md/1.png" alt="Screen Shoooot" style="zoom:33%;" /></p>
+<p align="center"><img width="850px" src="/pics/md/project.png" alt="Screen Shoooot" style="zoom:100%;" /></p>
 
-### Home Page
-
-<p align="center"><img width="850px" src="/pics/md/2.png" alt="Screen Shoooot" style="zoom:33%;" /></p>
-
-### Find Loc
-
-<p align="center"><img width="850px" src="/pics/md/3.png" alt="Screen Shoooot" style="zoom:33%;" /></p>
-
-### Upload
-
-<p align="center"><img width="850px" src="/pics/md/4.png" alt="Screen Shoooot" style="zoom:33%;" /></p>
 
 ---
 
