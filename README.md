@@ -18,7 +18,7 @@
 ## Screenshot 📸
 
 
-<p align="center"><img width="850px" src="/pics/md/project.png" alt="Screen Shoooot" style="zoom:100%;" /></p>
+<p align="center"><img width="850px" src="https://raw.githubusercontent.com/BBestamiS/Photogram/main/pics/md/project.png" alt="Screen Shoooot" style="zoom:100%;" /></p>
 
 
 ---
