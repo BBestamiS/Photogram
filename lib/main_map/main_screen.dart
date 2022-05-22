@@ -286,14 +286,56 @@ class _MainState extends State<MainScreen> {
                                   width: width,
                                   color: Color.fromRGBO(255, 255, 255, 0.4),
                                   child: Center(
-                                    child: Text(
-                                      "Paylaşımları görebilmek için, birilerini takip etmelisin",
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.roboto(
-                                        textStyle: TextStyle(
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.w300,
-                                        ),
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  Color.fromRGBO(0, 0, 0, 0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            padding: EdgeInsets.all(10),
+                                            margin: EdgeInsets.only(
+                                                top: 20, left: 10, right: 10),
+                                            child: Text(
+                                              "Paylaşımları görebilmek için, birilerini takip etmelisin",
+                                              textAlign: TextAlign.center,
+                                              style: GoogleFonts.sora(
+                                                textStyle: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.w300,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            margin: EdgeInsets.only(top: 20),
+                                            child: Text(
+                                              "Yönlendirme",
+                                              textAlign: TextAlign.center,
+                                              style: GoogleFonts.sora(
+                                                textStyle: TextStyle(
+                                                  fontSize: 25,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          infoTamplate(
+                                              width,
+                                              "Profil ekranınıza gitmek için, profil resminize tıklayın",
+                                              "Click"),
+                                          infoTamplate(
+                                              width,
+                                              "Oturumunuzu sonlandırmak için, profil resminize basılı tutunuz",
+                                              "OnTap"),
+                                          infoTamplate(
+                                              width,
+                                              "Ekranı sağa kaydırarak işlemler sayfasına gidip, uygulamanın tadını çıkartmaya başlayabilirsin",
+                                              "Slide"),
+                                        ],
                                       ),
                                     ),
                                   ),
@@ -423,6 +465,42 @@ class _MainState extends State<MainScreen> {
           },
         ),
       ],
+    );
+  }
+
+  Container infoTamplate(double width, text, animation) {
+    return Container(
+      margin: EdgeInsets.only(top: 20, bottom: 20),
+      padding: EdgeInsets.only(top: 20, bottom: 20),
+      color: Color.fromARGB(23, 94, 15, 230),
+      child: Column(
+        children: [
+          Container(
+            margin: EdgeInsets.only(left: 10, right: 10),
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.sora(
+                textStyle: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w300,
+                ),
+              ),
+            ),
+          ),
+          AspectRatio(
+            aspectRatio: 500 / 200,
+            child: Container(
+              width: width,
+              child: riv.RiveAnimation.asset(
+                "animations/profile.riv",
+                fit: BoxFit.cover,
+                animations: [animation],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
