@@ -99,6 +99,7 @@ class _Profile extends State<Profile> {
 
               Map<String, dynamic> data =
                   snapshot.data!.data() as Map<String, dynamic>;
+
               return SafeArea(
                 child: Container(
                   width: width,
@@ -561,16 +562,21 @@ class _Profile extends State<Profile> {
                                   AsyncSnapshot<QuerySnapshot> snapshot) {
                                 if (snapshot.hasData) {
                                   if (snapshot.data!.docs.isEmpty) {
-                                    return Center(
-                                      child: Text(
-                                        "Bir paylaşım bulunamadı",
-                                        style: GoogleFonts.roboto(
-                                          textStyle: TextStyle(
-                                            fontSize: 25,
-                                            fontWeight: FontWeight.w300,
-                                          ),
+                                    return Column(
+                                      children: [
+                                        Expanded(
+                                          child: infoTamplate(
+                                              width,
+                                              "Ana ekrana gitmek için profil resmine basılı tutunuz",
+                                              "OnTap"),
                                         ),
-                                      ),
+                                        Expanded(
+                                          child: infoTamplate(
+                                              width,
+                                              "Profil ayarlarına gitmek için profil resminize tıklayınız",
+                                              "Click"),
+                                        ),
+                                      ],
                                     );
                                   }
                                   return Container(
@@ -1184,6 +1190,42 @@ class _Profile extends State<Profile> {
                   ),
                 ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Container infoTamplate(double width, text, animation) {
+    return Container(
+      margin: EdgeInsets.only(top: 20, bottom: 20),
+      padding: EdgeInsets.only(top: 20, bottom: 20),
+      color: Color.fromARGB(23, 94, 15, 230),
+      child: Column(
+        children: [
+          Container(
+            margin: EdgeInsets.only(left: 10, right: 10),
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.sora(
+                textStyle: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w300,
+                ),
+              ),
+            ),
+          ),
+          AspectRatio(
+            aspectRatio: 500 / 200,
+            child: Container(
+              width: width,
+              child: riv.RiveAnimation.asset(
+                "animations/profile.riv",
+                fit: BoxFit.cover,
+                animations: [animation],
+              ),
             ),
           ),
         ],

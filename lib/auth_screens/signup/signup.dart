@@ -581,6 +581,8 @@ class _SignupState extends State<Signup> {
                 userSurname.text,
                 userNName.text,
               );
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => Wrapper()));
             } else {
               print("Hata oluştu!");
             }
